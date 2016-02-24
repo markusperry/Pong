@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <Button
+        style="?android:attr/buttonStyleSmall"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Start"
+        android:id="@+id/startButton"
+        android:layout_weight="7"
+        android:layout_marginTop="50dp"
+        android:textStyle="bold" />
+
+    <cs301.up.edu.pong.AnimationSurface
+        android:id="@+id/animationSurface"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1">
+    </cs301.up.edu.pong.AnimationSurface>
+
+</LinearLayout>
+    
