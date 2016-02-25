@@ -4,8 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioGroup;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
 
     AnimationSurface mySurface;
     @Override
@@ -22,6 +23,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Button start = (Button)findViewById(R.id.startButton);
         start.setOnClickListener(this);
 
+        RadioGroup grouping = (RadioGroup)findViewById(R.id.group);
+        grouping.setOnCheckedChangeListener(this);
+
+        grouping.check(R.id.easyButton);
+
+
 
     }
 
@@ -33,5 +40,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             TestAnimator.county=0;
             TestAnimator.start=true;
         }
+    }
+
+    @Override
+    public void onCheckedChanged(RadioGroup group, int checkedId) {
+
     }
 }

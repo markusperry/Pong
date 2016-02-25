@@ -52,9 +52,16 @@ public class TestAnimator implements Animator {
      */
     public void tick(Canvas g) {
         drawBorders(g);
+        int xnum;
+        int ynum;
+        xnum = (g.getWidth()-100)/2;
+        ynum = (g.getHeight()-100)/2;
+
+        if (!start)
+        {
+            randomizeDirs();
+        }
         if (start) {
-            int xnum = 400;
-            int ynum = 100;
 
 
             if (goBackwardsx) {
@@ -70,24 +77,29 @@ public class TestAnimator implements Animator {
                 county++;
             }
 
+            xnum += (countx * 20);
+            ynum += (county * 20);
 
-            xnum += (countx * 50);
-            ynum += (county * 30);
 
 
-            if (xnum > g.getWidth() - radius - 50 || (xnum < 50 + radius && goBackwardsx)) {
+            if (xnum+radius > (g.getWidth()-50) || (xnum < 50+radius)) {
                 goBackwardsx = !goBackwardsx;
             }
 
-            if (ynum > g.getHeight()-radius)
+            if (ynum < 50+radius)
             {
-                start = false;
+                goBackwardsy=!goBackwardsy;
             }
 
+            if (ynum > g.getHeight() - radius) {
+                start = false;
+            }
 
             Paint redPaint = new Paint();
             redPaint.setColor(Color.RED);
             g.drawCircle(xnum, ynum, radius, redPaint);
+
+
         }
     }
 
@@ -112,30 +124,35 @@ public class TestAnimator implements Animator {
     /**
      * reverse the ball's direction when the screen is tapped
      */
-    public void onTouch(MotionEvent event)
-    {
-       return;
+    public void onTouch(MotionEvent event) {
+        return;
     }
 
-    public void drawBorders(Canvas g)
-    {
+    public void drawBorders(Canvas g) {
 
         Paint borderPaint = new Paint();
         borderPaint.setColor(Color.rgb(252, 236, 160));
-        g.drawRect(0, 0, 50f, g.getHeight(), borderPaint);
-        g.drawRect(0, 0, g.getWidth(), 50f, borderPaint);
-        g.drawRect(g.getWidth()-50,0,g.getWidth(),g.getHeight(),borderPaint);
+        g.drawRect(0, 0, 50, g.getHeight(), borderPaint);
+        g.drawRect(0, 0, g.getWidth(), 50, borderPaint);
+        g.drawRect(g.getWidth() - 50, 0, g.getWidth(), g.getHeight(), borderPaint);
     }
 
-    public int genRandom()
-    {
+    public int genRandom() {
         Random gen = new Random();
-        int random = gen.nextInt(1);
+        int random = gen.nextInt(2);
 
         return random;
     }
 
-
+    public void randomizeDirs()
+    {
+        int num = genRandom();
+        if (num==0)
+        {
+            goBackwardsx=!goBackwardsx;
+            goBackwardsy=!goBackwardsy;
+        }
+    }
 
 
 }//class TextAnimator
