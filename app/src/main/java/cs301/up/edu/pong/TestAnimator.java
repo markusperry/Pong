@@ -21,8 +21,9 @@ public class TestAnimator implements Animator {
     public static int county = 0;
     private boolean goBackwardsx = false; // whether clock is ticking backwards
     private boolean goBackwardsy = false;
-    private int radius = 60;
+    private int radius = 30;
     public static boolean start = false;
+    public static int difficulty=1;
 
     /**
      * Interval between animation frames: .03 seconds (i.e., about 33 times
@@ -52,6 +53,7 @@ public class TestAnimator implements Animator {
      */
     public void tick(Canvas g) {
         drawBorders(g);
+        drawPaddle(difficulty,g);
         int xnum;
         int ynum;
         xnum = (g.getWidth()-100)/2;
@@ -59,6 +61,7 @@ public class TestAnimator implements Animator {
 
         if (!start)
         {
+            drawGameText(g);
             randomizeDirs();
         }
         if (start) {
@@ -77,8 +80,8 @@ public class TestAnimator implements Animator {
                 county++;
             }
 
-            xnum += (countx * 20);
-            ynum += (county * 20);
+            xnum += (countx * 30);
+            ynum += (county * 30);
 
 
 
@@ -91,9 +94,36 @@ public class TestAnimator implements Animator {
                 goBackwardsy=!goBackwardsy;
             }
 
-            if (ynum > g.getHeight() - radius) {
-                start = false;
+            if (ynum > g.getHeight() - (radius+65)) {
+                if (difficulty==1)
+                {
+                    if (xnum>300-radius && xnum<(g.getWidth()-(300+radius)))
+                    {
+                        goBackwardsy = !goBackwardsy;
+                    }
+                    else
+                    {
+                        start = false;
+                    }
+                }
+                else
+                {
+                    if (xnum>500-radius && xnum<(g.getWidth()-(500+radius)))
+                    {
+                        goBackwardsy = !goBackwardsy;
+                    }
+                    else
+                    {
+                        start = false;
+                    }
+                }
+
+
+
+
             }
+
+
 
             Paint redPaint = new Paint();
             redPaint.setColor(Color.RED);
@@ -152,6 +182,29 @@ public class TestAnimator implements Animator {
             goBackwardsx=!goBackwardsx;
             goBackwardsy=!goBackwardsy;
         }
+    }
+
+    public void drawPaddle(int diff, Canvas g)
+    {
+        Paint borderPaint = new Paint();
+        borderPaint.setColor(Color.rgb(252, 236, 160));
+        if (diff==1)
+        {
+            g.drawRect(300,g.getHeight()-55,g.getWidth()-300,g.getHeight()-10,borderPaint);
+        }
+        else
+        {
+            g.drawRect(500,g.getHeight()-55,g.getWidth()-500,g.getHeight()-10,borderPaint);
+        }
+    }
+
+    public void drawGameText(Canvas g)
+    {
+        Paint wordPaint = new Paint();
+        wordPaint.setColor(Color.RED);
+        wordPaint.setTextSize(50f);
+
+        g.drawText("PRESS START TO PLAY!",400f,g.getHeight()/2,wordPaint);
     }
 
 

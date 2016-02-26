@@ -44,6 +44,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-
+        if (checkedId==R.id.easyButton)
+        {
+            TestAnimator.difficulty=1;
+        }
+        else
+        {
+            TestAnimator.difficulty=2;
+        }
     }
 }
