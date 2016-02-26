@@ -230,6 +230,14 @@ public class TestAnimator implements Animator {
         wordPaint.setColor(Color.RED);
         wordPaint.setTextSize(50f);
 
+        /**
+         * EXTERNAL CITATION
+         * DATE: Feb 26, 2016
+         * PROBLEM: Didn't know how to draw text on surface view
+         * RESOURCE: http://developer.android.com/reference/android/
+         *      graphics/Canvas.html#drawText(java.lang.String, float, float, android.graphics.Paint)
+         * SOLUTION: used drawText method.
+         */
         g.drawText("PRESS START TO PLAY!",400f,g.getHeight()/2,wordPaint);
     }
 
