@@ -20,18 +20,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mySurface.setAnimator(new TestAnimator());
 
 
+        //Start button reference
         Button start = (Button)findViewById(R.id.startButton);
         start.setOnClickListener(this);
 
+        //Radio Groud Reference
         RadioGroup grouping = (RadioGroup)findViewById(R.id.group);
         grouping.setOnCheckedChangeListener(this);
 
+        //Set the default to easy
         grouping.check(R.id.easyButton);
 
 
 
     }
 
+    /**
+     * Handles click events
+     * @param v the view that was clicked
+     */
     @Override
     public void onClick(View v) {
         if (v.getId()==R.id.startButton)
@@ -42,6 +49,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    /**
+     * Handle radio group changes (change difficulty)
+     * @param group RadioGroup that was changed.
+     * @param checkedId THe ID of the button that was checked.
+     */
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
         if (checkedId==R.id.easyButton)
