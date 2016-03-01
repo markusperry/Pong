@@ -1,6 +1,7 @@
 package cs301.up.edu.pong;
 
 import android.graphics.*;
+import android.util.Log;
 import android.view.MotionEvent;
 
 import java.util.Random;
@@ -28,6 +29,11 @@ public class TestAnimator implements Animator {
     private int radius = 30;
     public static boolean start = false; //whether to start game or not
     public static int difficulty=1; //paddle difficulty
+    protected int paddleEdge = 0;
+    private int easyEdge = 300;
+    private int hardEdge = 500;
+    private int newEasyEdge;
+    private int newHardEdge;
 
     /**
      * Interval between animation frames: .03 seconds (i.e., about 33 times
@@ -58,7 +64,7 @@ public class TestAnimator implements Animator {
     public void tick(Canvas g) {
         //draw borders and paddle
         drawBorders(g);
-        drawPaddle(difficulty,g);
+        drawPaddle(difficulty,g, paddleEdge);
 
         //X and Y coordinate of the ball
         int xnum;
@@ -203,21 +209,27 @@ public class TestAnimator implements Animator {
      * @param diff the difficulty
      * @param g the canvas to draw on
      */
-    public void drawPaddle(int diff, Canvas g)
+    public void drawPaddle(int diff, Canvas g, int startX)
     {
         Paint borderPaint = new Paint();
         borderPaint.setColor(Color.rgb(252, 236, 160));
+        newEasyEdge=0;
+        newHardEdge=0;
         //easy, draw big paddle
         if (diff==1)
         {
-            g.drawRect(300,g.getHeight()-55,g.getWidth()-300,g.getHeight()-10,borderPaint);
+            g.drawRect(easyEdge+startX,g.getHeight()-55,g.getWidth()-easyEdge+startX,g.getHeight()-10,borderPaint);
+            newEasyEdge = easyEdge+startX;
+
         }
 
         //hard, draw small paddle
         else
         {
-            g.drawRect(500,g.getHeight()-55,g.getWidth()-500,g.getHeight()-10,borderPaint);
+            g.drawRect(hardEdge+startX,g.getHeight()-55,g.getWidth()-hardEdge+startX,g.getHeight()-10,borderPaint);
+            newHardEdge = hardEdge+startX;
         }
+
     }
 
     /**
@@ -239,6 +251,18 @@ public class TestAnimator implements Animator {
          * SOLUTION: used drawText method.
          */
         g.drawText("PRESS START TO PLAY!",400f,g.getHeight()/2,wordPaint);
+    }
+
+    public int getEdges(int diff)
+    {
+        if (diff==1)
+        {
+            return this.newEasyEdge;
+        }
+        else
+        {
+            return this.newHardEdge;
+        }
     }
 
 }//class TextAnimator
