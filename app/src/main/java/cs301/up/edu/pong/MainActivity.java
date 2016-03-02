@@ -1,20 +1,37 @@
 package cs301.up.edu.pong;
 
+import android.content.pm.ActivityInfo;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, RadioGroup.OnCheckedChangeListener, View.OnTouchListener
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,
+        RadioGroup.OnCheckedChangeListener, View.OnTouchListener
 ,GestureDetector.OnGestureListener{
 
-    AnimationSurface mySurface;
-    GestureDetector gd =null;
-    TestAnimator myAnimator;
+    protected AnimationSurface mySurface;
+    protected GestureDetector gd =null;
+    protected TestAnimator myAnimator;
+    protected static TextView scoreCount;
+    protected SoundPool soundEffects = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
+    /**
+     * EXTERNAL CITATION
+     * PROBLEM: Could not get method to run on UI thread
+     * RESOURCE: James Schimdt
+     * SOLUTION: Make some things static and I know I know it's bad but it's the only way to make
+     * it work
+     */
+    protected static TextView livesCount;
+    protected static Button start;
+    protected int paddleStrike;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,10 +45,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         mySurface.setAnimator(myAnimator);
         mySurface.setOnTouchListener(this);
 
-
         //Start button reference
-        Button start = (Button)findViewById(R.id.startButton);
+        start = (Button)findViewById(R.id.startButton);
         start.setOnClickListener(this);
+        start.setClickable(true);
+        start.setVisibility(View.VISIBLE);
 
         //Radio Groud Reference
         RadioGroup grouping = (RadioGroup)findViewById(R.id.group);
@@ -42,10 +60,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         gd = new GestureDetector(this, this);
 
+        scoreCount = (TextView)findViewById(R.id.scoreView);
+        livesCount = (TextView)findViewById(R.id.livesView);
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        paddleStrike = soundEffects.load(this,R.raw.bloop1,1);
 
 
     }
 
+    public void setTotal(int score)
+    {
+        scoreCount.setText(String.valueOf(score));
+    }
+
+    public void changeLives(int lives)
+    {
+        if (lives<0)
+        {
+            start.setClickable(false);
+            start.setVisibility(View.INVISIBLE);
+        }
+        else {
+            livesCount.setText(String.valueOf(lives));
+        }
+
+    }
     /**
      * Handles click events
      * @param v the view that was clicked
@@ -102,15 +142,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        Log.i("Event","Enter onScroll");
 
         float startX = e1.getX();
         float endX = e2.getX();
         int deltaX = (int)(endX-startX);
 
-        Log.i("Drag Distance",String.valueOf(deltaX));
-
-        myAnimator.paddleEdge = deltaX;
+        myAnimator.paddleChange = deltaX;
         return true;
     }
 
@@ -122,5 +159,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         return false;
+    }
+
+    public void playSound()
+    {
+        soundEffects.play(paddleStrike,1.0f,1.0f,1,0,1.0f);
     }
 }

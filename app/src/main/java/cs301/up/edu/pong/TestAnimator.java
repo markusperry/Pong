@@ -3,6 +3,7 @@ package cs301.up.edu.pong;
 import android.graphics.*;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.TextView;
 
 import java.util.Random;
 
@@ -19,21 +20,26 @@ import java.util.Random;
  * @version Februar 2016 v.2
  * edited by Markus to fit description.
  */
-public class TestAnimator implements Animator {
+public class TestAnimator extends MainActivity implements Animator {
 
     // instance variables
-    public static int countx = 0; // counts the number of logical clock ticks
-    public static int county = 0;
+    public int countx = 0; // counts the number of logical clock ticks
+    public int county = 0;
     private boolean goBackwardsx = false; // whether clock is ticking backwards
     private boolean goBackwardsy = false;
     private int radius = 30;
-    public static boolean start = false; //whether to start game or not
-    public static int difficulty=1; //paddle difficulty
-    protected int paddleEdge = 0;
+    public boolean start = false; //whether to start game or not
+    public int difficulty=1; //paddle difficulty
+    protected int paddleChange = 0;
     private int easyEdge = 300;
     private int hardEdge = 500;
-    private int newEasyEdge;
-    private int newHardEdge;
+    private int leftEdge;
+    private int RighEdge;
+    private int speedX=15;
+    private int speedY=15;
+    public int totalScore=0;
+    protected int life = 5;
+
 
     /**
      * Interval between animation frames: .03 seconds (i.e., about 33 times
@@ -64,7 +70,7 @@ public class TestAnimator implements Animator {
     public void tick(Canvas g) {
         //draw borders and paddle
         drawBorders(g);
-        drawPaddle(difficulty,g, paddleEdge);
+        drawPaddle(difficulty,g, paddleChange);
 
         //X and Y coordinate of the ball
         int xnum;
@@ -79,6 +85,7 @@ public class TestAnimator implements Animator {
         {
             drawGameText(g);
             randomizeDirs();
+            changeSpeed();
         }
         //start the game
         if (start) {
@@ -98,40 +105,48 @@ public class TestAnimator implements Animator {
             }
 
             //animate ball movement
-            xnum += (countx * 30);
-            ynum += (county * 30);
+            xnum += (countx * speedX);
+            ynum += (county * speedY);
 
             //wall bouncing
-            if (xnum+radius > (g.getWidth()-50) || (xnum < 50+radius)) {
+            if (xnum+radius > (g.getWidth()-50) || (xnum < 50+radius))
+            {
                 goBackwardsx = !goBackwardsx;
             }
             if (ynum < 50+radius)
             {
-                goBackwardsy=!goBackwardsy;
+                goBackwardsy = !goBackwardsy;
+
             }
 
             //paddle bouncing based on difficulty
             if (ynum > g.getHeight() - (radius+65)) {
                 if (difficulty==1)
                 {
-                    if (xnum>300-radius && xnum<(g.getWidth()-(300+radius)))
+                    if (xnum>leftEdge && xnum<RighEdge)
                     {
                         goBackwardsy = !goBackwardsy;
+                        totalScore++;;
                     }
                     else
                     {
                         start = false;
+                        totalScore=0;
+                        life--;
                     }
                 }
                 else
                 {
-                    if (xnum>500-radius && xnum<(g.getWidth()-(500+radius)))
+                    if (xnum>leftEdge && xnum<RighEdge)
                     {
                         goBackwardsy = !goBackwardsy;
+                        totalScore++;
                     }
                     else
                     {
                         start = false;
+                        totalScore=0;
+                        life--;
                     }
                 }
             }
@@ -140,6 +155,19 @@ public class TestAnimator implements Animator {
             redPaint.setColor(Color.RED);
             g.drawCircle(xnum, ynum, radius, redPaint);
         }
+        /**
+         * EXTERNAL CITATION
+         * PROBLEM: trying to change a text view from animator thread
+         * RESOURCE: Michael Waitt
+         * SOLUTION: added a runOnUiThread method to run it on another thread.
+         */
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                setTotal(totalScore);
+                changeLives(life);
+            }
+        });
     }//tick
 
     /**
@@ -175,9 +203,9 @@ public class TestAnimator implements Animator {
 
         Paint borderPaint = new Paint();
         borderPaint.setColor(Color.rgb(252, 236, 160));
-        g.drawRect(0, 0, 50, g.getHeight(), borderPaint);
+        g.drawRect(0, 0, 50, g.getHeight()-65, borderPaint);
         g.drawRect(0, 0, g.getWidth(), 50, borderPaint);
-        g.drawRect(g.getWidth() - 50, 0, g.getWidth(), g.getHeight(), borderPaint);
+        g.drawRect(g.getWidth() - 50, 0, g.getWidth(), g.getHeight()-65, borderPaint);
     }
 
     /**
@@ -212,22 +240,26 @@ public class TestAnimator implements Animator {
     public void drawPaddle(int diff, Canvas g, int startX)
     {
         Paint borderPaint = new Paint();
-        borderPaint.setColor(Color.rgb(252, 236, 160));
-        newEasyEdge=0;
-        newHardEdge=0;
+        borderPaint.setColor(Color.rgb(0, 0, 0));
+
         //easy, draw big paddle
         if (diff==1)
         {
-            g.drawRect(easyEdge+startX,g.getHeight()-55,g.getWidth()-easyEdge+startX,g.getHeight()-10,borderPaint);
-            newEasyEdge = easyEdge+startX;
+            int length = g.getWidth()-600;
+            g.drawRect(easyEdge+startX,g.getHeight()-55,easyEdge+startX+length,g.getHeight()-10,borderPaint);
+            leftEdge = easyEdge+startX;
+            RighEdge = easyEdge+startX+length;
 
         }
 
         //hard, draw small paddle
         else
         {
-            g.drawRect(hardEdge+startX,g.getHeight()-55,g.getWidth()-hardEdge+startX,g.getHeight()-10,borderPaint);
-            newHardEdge = hardEdge+startX;
+            int length = g.getWidth()-1000;
+            g.drawRect(hardEdge+startX,g.getHeight()-55,hardEdge+startX+length,g.getHeight()-10,borderPaint);
+
+            leftEdge = hardEdge+startX;
+            RighEdge = hardEdge+startX+length;
         }
 
     }
@@ -253,16 +285,12 @@ public class TestAnimator implements Animator {
         g.drawText("PRESS START TO PLAY!",400f,g.getHeight()/2,wordPaint);
     }
 
-    public int getEdges(int diff)
-    {
-        if (diff==1)
-        {
-            return this.newEasyEdge;
-        }
-        else
-        {
-            return this.newHardEdge;
-        }
+    private void changeSpeed() {
+        Random gen = new Random();
+
+        speedX= gen.nextInt(30)+15;
+        speedY = gen.nextInt(30)+15;
     }
+
 
 }//class TextAnimator
