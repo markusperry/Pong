@@ -1,13 +1,10 @@
 package cs301.up.edu.pong;
 
-import android.graphics.*;
-import android.media.MediaPlayer;
-import android.util.Log;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.view.MotionEvent;
-import android.widget.TextView;
-
 import java.util.Random;
-
 
 /**
  * class that animates a ball repeatedly moving diagonally on
@@ -68,6 +65,7 @@ public class TestAnimator extends MainActivity implements Animator {
      * @param g the graphics object on which to draw
      */
     public void tick(Canvas g) {
+        //draw the borders and paddle
         drawBorders(g);
         drawPaddle(difficulty,g, paddleChange);
 
@@ -120,30 +118,36 @@ public class TestAnimator extends MainActivity implements Animator {
 
             //paddle bouncing based on difficulty
             if (ynum > g.getHeight() - (radius+65)) {
+                //easy difficulty
                 if (difficulty==1)
                 {
+                    //inside paddle
                     if (xnum>leftEdge && xnum<RighEdge) {
                         goBackwardsy = !goBackwardsy;
                         totalScore++;
-                        wallStrike.start();
+                        wallStrike.start(); //play sound
                     }
+                    //missed paddle
                     else
                     {
                         start = false;
                         totalScore=0;
                         life--;
-                        missedBall.start();
-                        v.vibrate(500);
+                        missedBall.start();//play sound
+                        v.vibrate(500);//vibrate
                     }
                 }
+                //hand difficulty
                 else
                 {
+                    //inside paddle
                     if (xnum>leftEdge && xnum<RighEdge)
                     {
                         goBackwardsy = !goBackwardsy;
                         totalScore++;
                         wallStrike.start();
                     }
+                    //missed paddle
                     else
                     {
                         start = false;
@@ -165,6 +169,7 @@ public class TestAnimator extends MainActivity implements Animator {
          * RESOURCE: Michael Waitt
          * SOLUTION: added a runOnUiThread method to run it on another thread.
          */
+        //change the current lives and ball count if it changed.
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -253,7 +258,6 @@ public class TestAnimator extends MainActivity implements Animator {
             g.drawRect(easyEdge+startX,g.getHeight()-55,easyEdge+startX+length,g.getHeight()-10,borderPaint);
             leftEdge = easyEdge+startX;
             RighEdge = easyEdge+startX+length;
-
         }
 
         //hard, draw small paddle
@@ -265,7 +269,6 @@ public class TestAnimator extends MainActivity implements Animator {
             leftEdge = hardEdge+startX;
             RighEdge = hardEdge+startX+length;
         }
-
     }
 
     /**
@@ -277,7 +280,6 @@ public class TestAnimator extends MainActivity implements Animator {
         Paint wordPaint = new Paint();
         wordPaint.setColor(Color.RED);
         wordPaint.setTextSize(50f);
-
         /**
          * EXTERNAL CITATION
          * DATE: Feb 26, 2016
@@ -289,12 +291,13 @@ public class TestAnimator extends MainActivity implements Animator {
         g.drawText("PRESS START TO PLAY!",400f,g.getHeight()/2,wordPaint);
     }
 
+    /**
+     * Change the speed of the game ball to a random X and Y velocity.
+     */
     private void changeSpeed() {
         Random gen = new Random();
 
         speedX= gen.nextInt(30)+15;
         speedY = gen.nextInt(30)+15;
     }
-
-
 }//class TextAnimator
