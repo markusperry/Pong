@@ -1,9 +1,13 @@
 package cs301.up.edu.pong;
 
+import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
+import android.media.MediaActionSound;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -20,7 +24,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected GestureDetector gd =null;
     protected TestAnimator myAnimator;
     protected static TextView scoreCount;
-    protected SoundPool soundEffects = new SoundPool(1, AudioManager.STREAM_MUSIC,0);
     /**
      * EXTERNAL CITATION
      * PROBLEM: Could not get method to run on UI thread
@@ -30,7 +33,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     protected static TextView livesCount;
     protected static Button start;
-    protected int paddleStrike;
+    protected MediaPlayer backgroundMusic;
+    protected static MediaPlayer wallStrike;
+    protected static MediaPlayer missedBall;
+    protected static Vibrator v;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,9 +70,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         livesCount = (TextView)findViewById(R.id.livesView);
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-        paddleStrike = soundEffects.load(this,R.raw.bloop1,1);
 
+        backgroundMusic = MediaPlayer.create(this,R.raw.backgroundjams);
+        backgroundMusic.setLooping(true);
+        backgroundMusic.start();
 
+        wallStrike = MediaPlayer.create(this, R.raw.wallbloop);
+        missedBall = MediaPlayer.create(this,R.raw.deathsound);
+
+        v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     public void setTotal(int score)
@@ -161,8 +173,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
-    public void playSound()
+    public void onPause()
     {
-        soundEffects.play(paddleStrike,1.0f,1.0f,1,0,1.0f);
+        super.onPause();
+        backgroundMusic.pause();
+    }
+
+    public void onResume()
+    {
+        super.onResume();
+        backgroundMusic.start();
     }
 }

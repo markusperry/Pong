@@ -1,6 +1,7 @@
 package cs301.up.edu.pong;
 
 import android.graphics.*;
+import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.TextView;
@@ -40,7 +41,6 @@ public class TestAnimator extends MainActivity implements Animator {
     public int totalScore=0;
     protected int life = 5;
 
-
     /**
      * Interval between animation frames: .03 seconds (i.e., about 33 times
      * per second).
@@ -58,7 +58,7 @@ public class TestAnimator extends MainActivity implements Animator {
      */
     public int backgroundColor() {
         // create/return the background color
-        return Color.rgb(180, 200, 255);
+        return Color.rgb(0, 0, 0);
     }
 
 
@@ -68,7 +68,6 @@ public class TestAnimator extends MainActivity implements Animator {
      * @param g the graphics object on which to draw
      */
     public void tick(Canvas g) {
-        //draw borders and paddle
         drawBorders(g);
         drawPaddle(difficulty,g, paddleChange);
 
@@ -89,7 +88,6 @@ public class TestAnimator extends MainActivity implements Animator {
         }
         //start the game
         if (start) {
-
             //determine direction of animation
             if (goBackwardsx) {
                 countx--;
@@ -112,27 +110,30 @@ public class TestAnimator extends MainActivity implements Animator {
             if (xnum+radius > (g.getWidth()-50) || (xnum < 50+radius))
             {
                 goBackwardsx = !goBackwardsx;
+                wallStrike.start();
             }
             if (ynum < 50+radius)
             {
                 goBackwardsy = !goBackwardsy;
-
+                wallStrike.start();
             }
 
             //paddle bouncing based on difficulty
             if (ynum > g.getHeight() - (radius+65)) {
                 if (difficulty==1)
                 {
-                    if (xnum>leftEdge && xnum<RighEdge)
-                    {
+                    if (xnum>leftEdge && xnum<RighEdge) {
                         goBackwardsy = !goBackwardsy;
-                        totalScore++;;
+                        totalScore++;
+                        wallStrike.start();
                     }
                     else
                     {
                         start = false;
                         totalScore=0;
                         life--;
+                        missedBall.start();
+                        v.vibrate(500);
                     }
                 }
                 else
@@ -141,12 +142,15 @@ public class TestAnimator extends MainActivity implements Animator {
                     {
                         goBackwardsy = !goBackwardsy;
                         totalScore++;
+                        wallStrike.start();
                     }
                     else
                     {
                         start = false;
                         totalScore=0;
                         life--;
+                        missedBall.start();
+                        v.vibrate(500);
                     }
                 }
             }
@@ -202,7 +206,7 @@ public class TestAnimator extends MainActivity implements Animator {
     public void drawBorders(Canvas g) {
 
         Paint borderPaint = new Paint();
-        borderPaint.setColor(Color.rgb(252, 236, 160));
+        borderPaint.setColor(Color.rgb(255, 255, 255));
         g.drawRect(0, 0, 50, g.getHeight()-65, borderPaint);
         g.drawRect(0, 0, g.getWidth(), 50, borderPaint);
         g.drawRect(g.getWidth() - 50, 0, g.getWidth(), g.getHeight()-65, borderPaint);
@@ -240,12 +244,12 @@ public class TestAnimator extends MainActivity implements Animator {
     public void drawPaddle(int diff, Canvas g, int startX)
     {
         Paint borderPaint = new Paint();
-        borderPaint.setColor(Color.rgb(0, 0, 0));
+        borderPaint.setColor(Color.rgb(255, 255, 255));
 
         //easy, draw big paddle
         if (diff==1)
         {
-            int length = g.getWidth()-600;
+            int length = g.getWidth()-800;
             g.drawRect(easyEdge+startX,g.getHeight()-55,easyEdge+startX+length,g.getHeight()-10,borderPaint);
             leftEdge = easyEdge+startX;
             RighEdge = easyEdge+startX+length;
